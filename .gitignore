@@ -1,0 +1,6 @@
+x64/
+Soup/
+mod/paks/Soup.dll
+*.user
+*.VC.db
+*.VC.opendb

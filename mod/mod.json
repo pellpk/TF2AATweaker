@@ -1,0 +1,9 @@
+{
+	"Name": "Virus.Soup",
+	"DisplayName": "Soup",
+	"Description": "Soup for Northstar",
+	"Version": "1.0.0",
+	"LoadPriority": 0,
+	"ConVars": [],
+	"Scripts": []
+}
