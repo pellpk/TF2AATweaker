@@ -1,7 +1,8 @@
 {
-	"Name": "Virus.Soup",
-	"DisplayName": "Soup",
-	"Description": "Soup for Northstar",
+	"Name": "rakostar.aimassisttweaker",
+	"DisplayName": "Aim Assist Value Changer",
+	"Description": "Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.",
+	"RequiredOnClient": true,
 	"Version": "1.0.0",
 	"LoadPriority": 0,
 	"ConVars": [],
