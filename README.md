@@ -19,3 +19,5 @@ sv_soup_require_client_mod = Require clients to have the mod installed (kicks cl
 boolean, default 1
 
 Original bounty video: https://www.youtube.com/watch?v=PfMJsnA4IAo
+
+ModWorkShop link: https://modworkshop.net/mod/55448
