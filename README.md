@@ -4,10 +4,20 @@
 This was a bounty mod, not created by me, but the original creator wanted to stay anonymous.
 Uses some code from [Northstar](https://northstar.tf/)
 
+### recommended values
+
+for reference base aa in the mod is "1", this is 0.4 tolerance ingame.
+
+for competitive, i feel 0.4 (0.16) or 0.45 (0.18) is the balanced option
+
+for more casual, i feel 0.5 (0.2) or a little higher is more balanced for less-experienced players
+
+do your own testing, have fun
+
 ### cvars:
 
 sv_soup_aimassist_multiplier = Global multiplier for controller aim assist strength.
-can be any value between 1 and 0. Default 1
+Default 1. Set to numbers higher than 1 for funny interactions.
 
 sv_soup_aimassist_snapshot_fix = Suppress snapshot snap-term for fire-before-ADS transitions. May cause issues.
 boolean, default 0
