@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "aimassist.h"
 #include "bits.h"
 #include "cvar.h"
 #include "convar.h"
@@ -27,6 +28,7 @@ void* g_pIConVar_Vtable = nullptr;
 
 int g_soupDLLIdentifier = -1;
 static std::vector<ConVar*> s_registeredConVars;
+static ConVar* sv_soup_test;
 AUTOHOOK(SetStringValEngine, engine.dll + 0x416C20, void, (ConVar* var, const char* value))
 {
 	if (var->IsFlagSet(FCVAR_CROUTON)) 
@@ -72,10 +74,10 @@ void CleanupConVars()
 		}
 	}
 	s_registeredConVars.clear();
+	sv_soup_test = nullptr;
+	ResetAimAssistConVarRefs();
 	g_soupDLLIdentifier = -1;
 }
-
-static ConVar* sv_soup_test;
 
 ON_DLL_LOAD_RELIESON("engine.dll", SoupTestVar, ConVar, (CModule module))
 {

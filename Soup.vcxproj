@@ -161,6 +161,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="aimassist.h" />
     <ClInclude Include="bits.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="concommand.h" />
@@ -182,6 +183,7 @@
     <ResourceCompile Include="Soup.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="aimassist.cpp" />
     <ClCompile Include="bits.cpp" />
     <ClCompile Include="color.cpp" />
     <ClCompile Include="concommand.cpp" />
