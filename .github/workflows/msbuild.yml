@@ -1,0 +1,102 @@
+name: MSBuild
+
+on:
+  push:
+    branches: ["master"]
+    tags:
+      - "*"
+  pull_request:
+    branches: ["master"]
+
+env:
+  SOLUTION_FILE_PATH: .
+  BUILD_CONFIGURATION: Release
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2025-vs2026
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Restore NuGet packages
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+
+      - name: Build
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+
+      - name: Prepare Staging Folder
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path staging/mod -Force
+
+          Copy-Item -Path mod/* -Destination staging/mod/ -Recurse
+          Copy-Item -Path manifest.json -Destination staging/mod/
+          Copy-Item -Path icon.png -Destination staging/mod/
+          Copy-Item -Path README.md -Destination staging/mod/
+
+          New-Item -ItemType Directory -Path staging/mod/paks -Force
+          Copy-Item -Path x64/Release/*.dll -Destination staging/mod/paks/
+
+          if ("${{ github.ref_type }}" -eq "tag") {
+            $modJson = Get-Content staging/mod/mod.json | ConvertFrom-Json
+            $modJson.Version = "${{ github.ref_name }}"
+            $modJson | ConvertTo-Json -Depth 10 | Set-Content staging/mod/mod.json
+
+            $manifestJson = Get-Content staging/mod/manifest.json | ConvertFrom-Json
+            $manifestJson.Version = "${{ github.ref_name }}"
+            $manifestJson | ConvertTo-Json -Depth 10 | Set-Content staging/mod/manifest.json
+          }
+
+      - name: Zip Staging
+        shell: pwsh
+        run: Compress-Archive -Path staging/mod/* -DestinationPath release.zip
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-build
+          path: release.zip
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref_type == 'tag'
+
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-build
+
+      - name: Upload to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
+          files: release.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Clean Version
+        run: echo "CLEAN_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_ENV
+
+      - name: Upload Thunderstore Package
+        uses: GreenTF/upload-thunderstore-package@v3.1
+        with:
+          community: northstar
+          namespace: rakostar
+          name: aimassisttweaker
+          version: ${{ env.CLEAN_VERSION }}
+          description: Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.
+          token: ${{ secrets.TS_KEY }}
+          file: release.zip
+          categories: "mods"
