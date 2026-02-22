@@ -86,13 +86,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get Clean Version
+        run: echo "CLEAN_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_ENV
+
       - name: Upload Thunderstore Package
         uses: GreenTF/upload-thunderstore-package@v3.1
         with:
           community: northstar
           namespace: ${{ github.repository_owner }}
           name: ${{ github.event.repository.name }}
-          version: ${{ github.ref_name }}
+          version: ${{ env.CLEAN_VERSION }}
           description: Example mod description # <----------- UPDATE THIS
           token: ${{ secrets.TS_KEY }}
           file: release.zip
