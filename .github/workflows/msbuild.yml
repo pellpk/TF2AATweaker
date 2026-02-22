@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-build
-          path: staging/mod
+          path: release.zip
 
   publish:
     runs-on: ubuntu-latest
