@@ -36,11 +36,12 @@ jobs:
       - name: Prepare Staging Folder
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path staging/mod/paks -Force
+          New-Item -ItemType Directory -Path staging/mod -Force
 
           Copy-Item -Path mod/* -Destination staging/mod/ -Recurse
           Copy-Item -Path manifest.json -Destination staging/mod/
 
+          New-Item -ItemType Directory -Path staging/mod/paks -Force
           Copy-Item -Path x64/Release/*.dll -Destination staging/mod/paks/
 
           if ("${{ github.ref_type }}" -eq "tag") {
