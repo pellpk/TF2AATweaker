@@ -40,6 +40,8 @@ jobs:
 
           Copy-Item -Path mod/* -Destination staging/mod/ -Recurse
           Copy-Item -Path manifest.json -Destination staging/mod/
+          Copy-Item -Path icon.png -Destination staging/mod/
+          Copy-Item -Path README.md -Destination staging/mod/
 
           New-Item -ItemType Directory -Path staging/mod/paks -Force
           Copy-Item -Path x64/Release/*.dll -Destination staging/mod/paks/
