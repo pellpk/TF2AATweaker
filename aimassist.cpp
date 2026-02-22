@@ -128,58 +128,6 @@ AUTOHOOK(InputBuildUserCmd, client.dll + 0x254D10, __int64, (__int64 a1, int a2,
 
 	return result;
 }
-AUTOHOOK(WriteUserCmd, client.dll + 0x33F160, void, (void* buf, void* cmd, void* from))
-{
-	struct __declspec(align(4)) CUserCmd
-	{
-		DWORD command_number;
-		DWORD tick_count;
-		float command_time;
-		Vector3 worldViewAngles;
-		BYTE _byte18;
-		Vector3 localViewAngles;
-		Vector3 attackangles;
-		float forwardmove;
-		float sidemove;
-		float upmove;
-		DWORD buttons;
-		BYTE impulse;
-		WORD _word46;
-		int meleetarget;
-		BYTE _byte4C;
-		DWORD random_seed;
-		BYTE _byte54;
-		BYTE _byte55;
-		BYTE _byte56;
-		DWORD _dword58;
-		DWORD _dword5C;
-		DWORD _dword60;
-		DWORD _dword64;
-		DWORD _dword68;
-		DWORD _dword6C;
-		DWORD _dword70;
-		float headoffset;
-		DWORD _dword78;
-		DWORD _dword7C;
-		Vector3 cameraPos;
-		Vector3 cameraAngles;
-		BYTE _byte98;
-		DWORD _dword9C;
-		DWORD _dwordA0;
-		DWORD _dwordA4;
-		DWORD _dwordA8;
-		float frameTime;
-	};
-	auto* userCmd = reinterpret_cast<CUserCmd*>(cmd);
-
-	// Inject 0xAA into the highest 8 bits of meleetarget
-	constexpr uint32_t kCanaryValue = 0xAA;
-
-	// Clear the top 8 bits just in case, then OR in the canary
-	userCmd->meleetarget = (userCmd->meleetarget & 0x00FFFFFF) | (kCanaryValue << 24);
-
-	WriteUserCmd(buf, cmd, from);
-}
 
 typedef void (*AimAssistApplyType)(__int64 a1, char a2, float a3, float a4, int a5, int a6, float a7, char a8, float a9, float* a10);
 AUTOHOOK(AimAssistApplyContext, client.dll + 0x99410, void, (__int64 a1, char a2, float a3, float a4, int a5, int a6, float a7, char a8, float a9, float* a10))
@@ -224,61 +172,6 @@ AUTOHOOK(AimAssistAdditiveTerm, client.dll + 0x9AED0, void, (__int64 a1, void* a
 {
 	AimAssistAdditiveTerm(a1, a2, a3);
 	ApplyVec2Scale(a3, GetAimAssistScale(0.0f, true));
-}
-// clang-format off
-AUTOHOOK(ReadUsercmd, server.dll + 0x2603F0, void, (void* buf, void* pCmd_move, void* pCmd_from)) // 4C 89 44 24 ? 53 55 56 57
-{
-	// Let normal usercmd read happen first, it's safe
-	ReadUsercmd(buf, pCmd_move, pCmd_from);
-	struct alignas(4) SV_CUserCmd
-	{
-		DWORD command_number;       // 0x00
-		DWORD tick_count;           // 0x04
-		float command_time;         // 0x08
-		Vector3 worldViewAngles;    // 0x0C
-		BYTE gap18[4];              // 0x18
-		Vector3 localViewAngles;    // 0x1C
-		Vector3 attackangles;       // 0x28
-		Vector3 move;               // 0x34
-		DWORD buttons;              // 0x40
-		BYTE impulse;               // 0x44
-		BYTE gap45[1];              // 0x45 (Padding to align weaponselect)
-		short weaponselect;         // 0x46
-		DWORD meleetarget;          // 0x48
-		BYTE gap4C[12];             // 0x4C (Includes gap4C_0 through gap4C_9)
-		Vector3 headangles;         // 0x58 (Server counterpart to client headangles)
-		float headoffset;           // 0x64 (FIXED: Now a 4-byte float)
-		BYTE gap68[8];              // 0x68 (gap65_3 and gap65_7)
-		Vector3 cameraPos;          // 0x70
-		Vector3 cameraAngles;       // 0x7C
-		BYTE gap88[4];              // 0x88
-		int tickSomething;          // 0x8C
-		DWORD dword90;              // 0x90
-		DWORD predictedServerEventAck; // 0x94
-		DWORD dword98;              // 0x98
-		float frameTime;            // 0x9C
-	};
-	auto* cmd = reinterpret_cast<SV_CUserCmd*>(pCmd_move);
-
-	constexpr uint32_t kCanaryValue = 0xAA;
-
-	// Shift down 24 bits to isolate the top 8 bits
-	uint8_t extractedCanary = static_cast<uint8_t>((cmd->meleetarget >> 24) & 0xFF);
-
-	if (extractedCanary != kCanaryValue)
-	{
-		// Only kick if the convar is enabled
-		if (IsClientModRequired())
-		{
-			*(char*)((char*)buf + 8) = 1;
-		}
-	}
-	else
-	{
-		// Canary found: mask it out so the server engine doesn't
-		// accidentally read an invalid high-bit entity handle.
-		cmd->meleetarget &= 0x00FFFFFF;
-	}
 }
 
 typedef float* (*AimAssistSnapType)(
