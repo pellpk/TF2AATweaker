@@ -66,3 +66,16 @@ jobs:
         with:
           name: release-build
           path: staging/
+
+      - name: Upload Thunderstore Package
+        uses: GreenTF/upload-thunderstore-package@v3.1
+        with:
+          community: northstar
+          namespace: ${{ github.repository_owner }}
+          name: ${{ env.name }}
+          version: ${{ github.ref_name }}
+          description: AA
+          token: ${{ secrets.TS_KEY }}
+          wrap: staging/mod/${{ github.repository_owner }}.${{ env.name }}
+          #deps: "northstar-Northstar@1.9.3"
+          categories: "mods"
