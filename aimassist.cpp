@@ -13,7 +13,6 @@ AUTOHOOK_INIT();
 static ConVar* sv_soup_aimassist_multiplier = nullptr;
 static ConVar* sv_soup_aimassist_snapshot_fix = nullptr;
 static ConVar* sv_soup_aimassist_fps_independence_fix = nullptr;
-static ConVar* sv_soup_require_client_mod = nullptr;
 
 static bool s_prevAdsActive = false;
 static bool s_latestAttackHeld = false;
@@ -218,11 +217,6 @@ ON_DLL_LOAD_RELIESON("engine.dll", AimAssistConVars, ConVar, (CModule module))
 		FCVAR_REPLICATED,
 		"Normalize unscaled aim-assist additive terms by frame time.");
 
-	sv_soup_require_client_mod = RegisterConVar(
-		"sv_soup_require_client_mod",
-		"1",
-		FCVAR_REPLICATED,
-		"Require clients to have the mod installed (kicks clients without the mod).");
 }
 
 ConVar* GetAimAssistMultiplierConVar()
@@ -240,11 +234,6 @@ ConVar* GetAimAssistFpsIndependenceFixConVar()
 	return sv_soup_aimassist_fps_independence_fix;
 }
 
-ConVar* GetRequireClientModConVar()
-{
-	return sv_soup_require_client_mod;
-}
-
 float GetAimAssistMultiplier()
 {
 	return sv_soup_aimassist_multiplier ? sv_soup_aimassist_multiplier->GetFloat() : 1.0f;
@@ -260,17 +249,12 @@ bool IsAimAssistFpsIndependenceFixEnabled()
 	return sv_soup_aimassist_fps_independence_fix ? sv_soup_aimassist_fps_independence_fix->GetBool() : true;
 }
 
-bool IsClientModRequired()
-{
-	return sv_soup_require_client_mod ? sv_soup_require_client_mod->GetBool() : true;
-}
 
 void ResetAimAssistConVarRefs()
 {
 	sv_soup_aimassist_multiplier = nullptr;
 	sv_soup_aimassist_snapshot_fix = nullptr;
 	sv_soup_aimassist_fps_independence_fix = nullptr;
-	sv_soup_require_client_mod = nullptr;
 	s_prevAdsActive = false;
 	s_latestAttackHeld = false;
 	s_latestAdsInputHeld = false;
