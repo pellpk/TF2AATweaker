@@ -67,10 +67,36 @@ jobs:
     if: github.ref_type == 'tag'
 
     steps:
+      - name: Setup tcli
+        run: |
+          wget --output-document tcli.tar.gz https://github.com/thunderstore-io/thunderstore-cli/releases/download/0.1.4/tcli-0.1.4-linux-x64.tar.gz
+          tar xvf tcli.tar.gz
+          sudo mv --verbose tcli-0.1.4-linux-x64/tcli /bin
+
+      - name: Get Clean Version
+        run: echo "CLEAN_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_ENV
+
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
           name: release-build
+
+      - name: Unzip Artifact
+        run: unzip release.zip -d package
+
+      - name: Publish to Thunderstore
+        env:
+          TCLI_AUTH_TOKEN: ${{ secrets.THUNDERSTORE_TOKEN }}
+        run: |
+          cd package
+          tcli init --package-name=testmod --package-namespace=${{ github.repository_owner }} --package-version ${{ env.CLEAN_VERSION }}
+
+          sed --in-place "s/communities = \[\]/communities = [\"northstar\"]/g" thunderstore.toml
+          sed --in-place "s/Example-Dependency = \"1.0.0\"//g" thunderstore.toml
+          cat thunderstore.toml
+
+          tcli build
+          tcli publish --repository "https://thunderstore.io/" --file build/*.zip
 
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v2
@@ -80,18 +106,3 @@ jobs:
           files: release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get Clean Version
-        run: echo "CLEAN_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_ENV
-
-      - name: Upload Thunderstore Package
-        uses: GreenTF/upload-thunderstore-package@v3.1
-        with:
-          community: northstar
-          namespace: AllusiveWheat
-          name: testmod
-          version: ${{ github.ref_name }}
-          description: Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.
-          token: ${{ secrets.TS_KEY }}
-          file: release.zip
-          categories: "mods"
