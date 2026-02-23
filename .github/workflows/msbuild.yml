@@ -85,6 +85,9 @@ jobs:
         run: |
           mkdir -p package/dist
           unzip release.zip -d package/dist
+          mv package/dist/icon.png package/icon.png
+          mv package/dist/README.md package/README.md
+          mv package/dist/manifest.json package/manifest.json
 
       - name: Publish to Thunderstore
         env:
