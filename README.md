@@ -30,5 +30,4 @@ boolean, default 1
 
 Original bounty video: https://www.youtube.com/watch?v=PfMJsnA4IAo
 
-ModWorkShop link: https://modworkshop.net/mod/55448
 Thunderstore link: https://thunderstore.io/c/northstar/p/rakostar/aimassisttweaker/
