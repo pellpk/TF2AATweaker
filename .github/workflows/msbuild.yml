@@ -96,6 +96,7 @@ jobs:
           files: release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TS_MOD_DESCRIPTION: Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.
       - name: Publish to Thunderstore
         env:
           TCLI_AUTH_TOKEN: ${{ secrets.TS_KEY }}
@@ -105,6 +106,7 @@ jobs:
 
           sed --in-place "s/communities = \[\]/communities = [\"northstar\"]/g" thunderstore.toml
           sed --in-place "s/Example-Dependency = \"1.0.0\"//g" thunderstore.toml
+           sed --in-place "s/description = \"Example mod description\"/description = \"$TS_MOD_DESCRIPTION\"/g" thunderstore.toml
           cat thunderstore.toml
 
           tcli build
