@@ -90,10 +90,10 @@ jobs:
 
       - name: Publish to Thunderstore
         env:
-          TCLI_AUTH_TOKEN: ${{ secrets.THUNDERSTORE_TOKEN }}
+          TCLI_AUTH_TOKEN: ${{ secrets.TS_KEY }}
         run: |
           cd package
-          tcli init --package-name=testmod --package-namespace=${{ github.repository_owner }} --package-version ${{ env.CLEAN_VERSION }}
+          tcli init --package-name=aimassisttweaker --package-namespace=rakostar --package-version ${{ env.CLEAN_VERSION }}
 
           sed --in-place "s/communities = \[\]/communities = [\"northstar\"]/g" thunderstore.toml
           sed --in-place "s/Example-Dependency = \"1.0.0\"//g" thunderstore.toml
