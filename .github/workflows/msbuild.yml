@@ -88,6 +88,14 @@ jobs:
           mv package/dist/icon.png package/icon.png
           mv package/dist/README.md package/README.md
 
+      - name: Upload to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
+          files: release.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to Thunderstore
         env:
           TCLI_AUTH_TOKEN: ${{ secrets.TS_KEY }}
@@ -101,12 +109,3 @@ jobs:
 
           tcli build
           tcli publish --repository "https://thunderstore.io/" --file build/*.zip
-
-      - name: Upload to GitHub Releases
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: "Release ${{ github.ref_name }}"
-          files: release.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
