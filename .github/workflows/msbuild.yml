@@ -82,7 +82,9 @@ jobs:
           name: release-build
 
       - name: Unzip Artifact
-        run: unzip release.zip -d package
+        run: |
+          mkdir -p package/dist
+          unzip release.zip -d package/dist
 
       - name: Publish to Thunderstore
         env:
