@@ -39,7 +39,6 @@ jobs:
           New-Item -ItemType Directory -Path staging/mod -Force
 
           Copy-Item -Path mod/* -Destination staging/mod/ -Recurse
-          Copy-Item -Path manifest.json -Destination staging/mod/
           Copy-Item -Path icon.png -Destination staging/mod/
           Copy-Item -Path README.md -Destination staging/mod/
 
@@ -50,10 +49,6 @@ jobs:
             $modJson = Get-Content staging/mod/mod.json | ConvertFrom-Json
             $modJson.Version = "${{ github.ref_name }}"
             $modJson | ConvertTo-Json -Depth 10 | Set-Content staging/mod/mod.json
-
-            $manifestJson = Get-Content staging/mod/manifest.json | ConvertFrom-Json
-            $manifestJson.Version = "${{ github.ref_name }}"
-            $manifestJson | ConvertTo-Json -Depth 10 | Set-Content staging/mod/manifest.json
           }
 
       - name: Zip Staging
@@ -72,10 +67,26 @@ jobs:
     if: github.ref_type == 'tag'
 
     steps:
+      - name: Setup tcli
+        run: |
+          wget --output-document tcli.tar.gz https://github.com/thunderstore-io/thunderstore-cli/releases/download/0.1.4/tcli-0.1.4-linux-x64.tar.gz
+          tar xvf tcli.tar.gz
+          sudo mv --verbose tcli-0.1.4-linux-x64/tcli /bin
+
+      - name: Get Clean Version
+        run: echo "CLEAN_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_ENV
+
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
           name: release-build
+
+      - name: Unzip Artifact
+        run: |
+          mkdir -p package/dist
+          unzip release.zip -d package/dist
+          mv package/dist/icon.png package/icon.png
+          mv package/dist/README.md package/README.md
 
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v2
@@ -85,18 +96,16 @@ jobs:
           files: release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to Thunderstore
+        env:
+          TCLI_AUTH_TOKEN: ${{ secrets.TS_KEY }}
+        run: |
+          cd package
+          tcli init --package-name=aimassisttweaker --package-namespace=rakostar --package-version ${{ env.CLEAN_VERSION }}
 
-      - name: Get Clean Version
-        run: echo "CLEAN_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_ENV
+          sed --in-place "s/communities = \[\]/communities = [\"northstar\"]/g" thunderstore.toml
+          sed --in-place "s/Example-Dependency = \"1.0.0\"//g" thunderstore.toml
+          cat thunderstore.toml
 
-      - name: Upload Thunderstore Package
-        uses: GreenTF/upload-thunderstore-package@v3.1
-        with:
-          community: northstar
-          namespace: rakostar
-          name: aimassisttweaker
-          version: ${{ env.CLEAN_VERSION }}
-          description: Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.
-          token: ${{ secrets.TS_KEY }}
-          file: release.zip
-          categories: "mods"
+          tcli build
+          tcli publish --repository "https://thunderstore.io/" --file build/*.zip
