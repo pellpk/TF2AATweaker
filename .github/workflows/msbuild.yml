@@ -95,7 +95,7 @@ jobs:
           community: northstar
           namespace: rakostar
           name: aimassisttweaker
-          version: ${{ env.CLEAN_VERSION }}
+          version: ${{ github.ref_name }}
           description: Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.
           token: ${{ secrets.TS_KEY }}
           file: release.zip
