@@ -49,10 +49,6 @@ jobs:
             $modJson = Get-Content staging/mod/mod.json | ConvertFrom-Json
             $modJson.Version = "${{ github.ref_name }}"
             $modJson | ConvertTo-Json -Depth 10 | Set-Content staging/mod/mod.json
-
-            $manifestJson = Get-Content staging/mod/manifest.json | ConvertFrom-Json
-            $manifestJson.Version = "${{ github.ref_name }}"
-            $manifestJson | ConvertTo-Json -Depth 10 | Set-Content staging/mod/manifest.json
           }
 
       - name: Zip Staging
