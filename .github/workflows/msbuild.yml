@@ -85,24 +85,32 @@ jobs:
         run: |
           mkdir -p package/dist
           unzip release.zip -d package/dist
+
+      - name: Prepare Thunderstore Package
+        run: |
+          MOD_DIR="package/mods/rakostar.aimassisttweaker"
+          mkdir -p "$MOD_DIR"
+
           mv package/dist/icon.png package/icon.png
           mv package/dist/README.md package/README.md
+
+          mv package/dist/* "$MOD_DIR/"
 
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: "Release ${{ github.ref_name }}"
+          name: "${{ github.ref_name }}"
           files: release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TS_MOD_DESCRIPTION: Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.
       - name: Publish to Thunderstore
         env:
           TCLI_AUTH_TOKEN: ${{ secrets.TS_KEY }}
+          TS_MOD_DESCRIPTION: Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.
         run: |
           cd package
-          tcli init --package-name=aimassisttweaker --package-namespace=rakostar --package-version ${{ env.CLEAN_VERSION }}
+          tcli init --package-name=testmod --package-namespace=AllusiveWheat --package-version ${{ env.CLEAN_VERSION }}
 
           sed --in-place "s/communities = \[\]/communities = [\"northstar\"]/g" thunderstore.toml
           sed --in-place "s/Example-Dependency = \"1.0.0\"//g" thunderstore.toml
