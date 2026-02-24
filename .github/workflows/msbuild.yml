@@ -105,7 +105,7 @@ jobs:
           TS_MOD_DESCRIPTION: Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.
         run: |
           cd package
-          tcli init --package-name=testmod --package-namespace=AllusiveWheat --package-version ${{ env.CLEAN_VERSION }}
+          tcli init --package-name=aimassisttweaker --package-namespace=rakostar --package-version ${{ env.CLEAN_VERSION }}
 
           sed --in-place "s/communities = \[\]/communities = [\"northstar\"]/g" thunderstore.toml
           sed --in-place "s/Example-Dependency = \"1.0.0\"//g" thunderstore.toml
