@@ -94,7 +94,7 @@ jobs:
           mv package/dist/icon.png package/icon.png
           mv package/dist/README.md package/README.md
 
-          mv package/dist/* package/mods/rakostar.aimassisttweaker/*
+          mv package/dist/* package/mods/rakostar.aimassisttweaker/
 
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v2
