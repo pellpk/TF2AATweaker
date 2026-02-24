@@ -88,13 +88,12 @@ jobs:
 
       - name: Prepare Thunderstore Package
         run: |
-          MOD_DIR="package/mods/rakostar.aimassisttweaker"
-          mkdir -p "$MOD_DIR"
+          mkdir -p package/mods/rakostar.aimassisttweaker
 
           mv package/dist/icon.png package/icon.png
           mv package/dist/README.md package/README.md
 
-          mv package/dist/* "$MOD_DIR/"
+          mv package/dist/* package/mods/rakostar.aimassisttweaker/*
 
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v2
