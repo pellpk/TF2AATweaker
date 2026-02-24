@@ -83,7 +83,7 @@ jobs:
 
       - name: Unzip Artifact
         run: |
-          mkdir -p package/dist
+          mkdir -p package/dist/mods/rakostar.aimassisttweaker
           unzip release.zip -d package/dist/mods/rakostar.aimassisttweaker
 
       - name: Prepare Thunderstore Package
