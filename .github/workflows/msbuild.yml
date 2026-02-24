@@ -84,17 +84,12 @@ jobs:
       - name: Unzip Artifact
         run: |
           mkdir -p package/dist
-          unzip release.zip -d package/dist
+          unzip release.zip -d package/dist/mods/rakostar.aimassisttweaker
 
       - name: Prepare Thunderstore Package
         run: |
-          mkdir -p package/mods
-          mkdir -p package/mods/rakostar.aimassisttweaker
-
-          mv package/dist/icon.png package/icon.png
-          mv package/dist/README.md package/README.md
-
-          mv package/dist/* package/mods/rakostar.aimassisttweaker/
+          mv package/dist/mods/rakostar.aimassisttweaker/icon.png package/icon.png
+          mv package/dist/mods/rakostar.aimassisttweaker/README.md package/README.md
 
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v2
