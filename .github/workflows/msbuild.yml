@@ -88,6 +88,7 @@ jobs:
 
       - name: Prepare Thunderstore Package
         run: |
+          mkdir -p package/mods
           mkdir -p package/mods/rakostar.aimassisttweaker
 
           mv package/dist/icon.png package/icon.png
