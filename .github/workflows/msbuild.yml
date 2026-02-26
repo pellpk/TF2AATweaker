@@ -83,23 +83,26 @@ jobs:
 
       - name: Unzip Artifact
         run: |
-          mkdir -p package/dist
-          unzip release.zip -d package/dist
-          mv package/dist/icon.png package/icon.png
-          mv package/dist/README.md package/README.md
+          mkdir -p package/dist/mods/rakostar.aimassisttweaker
+          unzip release.zip -d package/dist/mods/rakostar.aimassisttweaker
+
+      - name: Prepare Thunderstore Package
+        run: |
+          mv package/dist/mods/rakostar.aimassisttweaker/icon.png package/icon.png
+          mv package/dist/mods/rakostar.aimassisttweaker/README.md package/README.md
 
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: "Release ${{ github.ref_name }}"
+          name: "${{ github.ref_name }}"
           files: release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TS_MOD_DESCRIPTION: Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.
       - name: Publish to Thunderstore
         env:
           TCLI_AUTH_TOKEN: ${{ secrets.TS_KEY }}
+          TS_MOD_DESCRIPTION: Allows a server operator to change controller aim assist strength on the fly. Requires clients to have the mod installed.
         run: |
           cd package
           tcli init --package-name=aimassisttweaker --package-namespace=rakostar --package-version ${{ env.CLEAN_VERSION }}
