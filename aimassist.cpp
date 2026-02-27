@@ -154,6 +154,14 @@ AUTOHOOK(AimAssistTimeRamp, client.dll + 0x9A120, double, (__int64 a1, __int64 a
 	return static_cast<double>(scaled);
 }
 
+AUTOHOOK(AimAssistDo, client.dll + 0x9FCE0, bool, (__int64 player, char a2, char* a3, float a4))
+{
+	if (sv_soup_aimassist_multiplier && sv_soup_aimassist_multiplier->GetFloat() <= 0.0f)
+		return false;
+
+	return AimAssistDo(player, a2, a3, a4);
+}
+
 typedef void (*AimAssistStickPullType)(
 	__int64 a1, __int64 a2, float* a3, char a4, float a5, float a6, float a7, float a8, float* a9, float* a10, float* a11);
 AUTOHOOK(AimAssistStickPull, client.dll + 0xA0B80, void, (__int64 a1, __int64 a2, float* a3, char a4, float a5, float a6, float a7, float a8, float* a9, float* a10, float* a11))
