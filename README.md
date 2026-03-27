@@ -4,6 +4,8 @@
 This was a bounty mod, not created by me, but the original creator wanted to stay anonymous.
 Uses some code from [Northstar](https://northstar.tf/)
 
+God bless AllusiveWheat for maintaining this
+
 ### recommended values
 
 for reference base aa in the mod is "1", this is 0.4 tolerance ingame.
